@@ -12,11 +12,11 @@ namespace PlayableRPG_MasonSeale
         int _itemTwoCost;
         int _itemThreeCost;
         Player _player;
-        public Shop(Player player, )
-        {
+        //public Shop(Player player, )
+        //{
             
-            _player = player;
-        }
+        //    _player = player;
+        //}
 
         public void CheckAmountToBuy()
         {

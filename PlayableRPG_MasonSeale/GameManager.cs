@@ -60,7 +60,11 @@ namespace PlayableRPG_MasonSeale
         Map secondMap = new SecondMap();
         MovementChecker referee;
         List<Character> _enemyManager = new List<Character>();
+        List<Quests> _questManager = new List<Quests>();
         Shop shop;
+        Quests quest1;
+        Quests quest2;
+        Quests quest3;
         int enemyCount = 0;
         int windowX;
         int windowY;
@@ -70,7 +74,11 @@ namespace PlayableRPG_MasonSeale
             Console.Beep(4000, 30);
             windowX = Console.WindowHeight;
             windowY = Console.WindowWidth;
-            shop = new Shop(player);
+            //shop = new Shop(player);
+            quest1 = new Quests(1, "Defeat 3 enemies", false);
+            quest2 = new Quests(2, "Collect 5 coins", false);
+            quest3 = new Quests(3, "something", false);
+
             hud = new Hud();
             player = new Player(damage: 1, color: ConsoleColor.Blue, "0", 2, 4, 10);
             enemy = new Enemy(player, 10, 8, 10, ConsoleColor.Red, "i", 2);
@@ -130,6 +138,10 @@ namespace PlayableRPG_MasonSeale
             fred = new Enemy(player, 54, 9, 10, ConsoleColor.DarkRed, "i", 2);
             _enemyManager.Add(fred);
 
+            _questManager.Add(quest1);
+            _questManager.Add(quest2);
+            _questManager.Add(quest3);
+
             currentMap = new Map();
             referee = new MovementChecker();
             
@@ -145,6 +157,11 @@ namespace PlayableRPG_MasonSeale
                 //update map
                 currentMap.Update();
                 hud.HudUpdate(player);
+                foreach (Quests quests in _questManager)
+                {
+                    quests.DrawQuests();
+                }
+
                 if (player.AliveChecker() == false)
                 {
                     Console.Beep(200, 40);
@@ -164,7 +181,8 @@ namespace PlayableRPG_MasonSeale
                     break;
                 }
                 player.Update();
-                foreach(Character enemy in _enemyManager)
+
+                foreach (Character enemy in _enemyManager)
                 {
                     if (enemy.AliveChecker() == false)
                     {
@@ -188,7 +206,9 @@ namespace PlayableRPG_MasonSeale
                     referee.AttackDetection(player, enemy, hud);
                 }
 
-                if(referee.LoadMapCheck(player, currentMap) == true)
+
+
+                if (referee.LoadMapCheck(player, currentMap) == true)
                 {
                     ChangeMap(secondMap, currentMap);
                 }
@@ -236,6 +256,10 @@ namespace PlayableRPG_MasonSeale
                     }
 
                 } 
+
+
+
+
                 hud.WipeHud(currentMap);    
                 Console.SetCursorPosition(0,0);
                 
