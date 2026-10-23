@@ -1,0 +1,134 @@
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Security.Cryptography.X509Certificates;
+using System.Text;
+using System.Threading;
+using System.Threading.Tasks;
+
+namespace PlayableRPG_MasonSeale
+{
+    internal class Character
+    {
+        Position _oldpos = new Position(0, 0);
+        protected Health _health;
+        protected Position _pos;
+        protected ConsoleColor _color;
+        protected string _icon;
+        protected int _damage;
+        protected int _defense = 0;
+        protected bool _enabled = true;
+        protected Position _lastPos;
+        
+        public virtual void Move()
+        {
+
+        }
+        public Character(int startingPosX,int startingPosY, int maxHealth, ConsoleColor color, string icon, int damage)
+        {
+            _health = new Health(maxHealth);
+            _pos = new Position(x: startingPosX, y: startingPosY);
+            _damage = damage;
+            _color = color;
+            _icon = icon;
+        }
+        //displays the character at the current position.
+        public virtual void Update()
+        {
+            if(_pos.GetPositionY() >= Console.WindowHeight || _pos.GetPositionX() >= Console.WindowWidth)
+            {
+                return;
+            }
+            Console.SetCursorPosition(_pos.GetPositionX(), _pos.GetPositionY());
+            Console.ForegroundColor = _color;
+            Console.Write(_icon);
+
+        }
+        public int GetDamage()
+        {
+            return _damage;
+        }
+        public virtual string ShowName()
+        {
+            return "You";
+        }
+        //placeholder function
+        public virtual void DenyMovement()
+        {
+            _pos.SetposX(_oldpos.GetPositionX());
+            _pos.SetposY(_oldpos.GetPositionY());
+        }
+   
+        //returns x pos
+        public int GetYPos()
+        {
+            return _pos.GetPositionY();
+        }
+        //returns y pos
+        public int GetXPos()
+        {
+            return _pos.GetPositionX();
+        }
+        //deals damage
+        public void Pain(int painAmount)
+        {
+            if(painAmount - _defense <= 0)
+            {
+                return;
+            }
+            _health.TakeDamage((painAmount - _defense));
+        }
+        public void PenDamage(int painAmount)
+        {
+            _health.TakeDamage((painAmount));
+        }
+
+        public void ChangeDamage(int newDamage)
+        {
+            _damage = newDamage;
+        }
+
+        public int CurrentHP()
+        {
+            return _health.GetCurrentHP();
+
+        }
+        public void SetHealthToZero()
+        {
+            _health.SetToZero();
+        }
+        public void ChangeColor(ConsoleColor newcolor)
+        {
+            _color = newcolor;
+        }
+        public void ChangeDefense(int newDefense)
+        {
+            _defense = newDefense;
+        }
+
+        public void Enable()
+        {
+            _pos = _lastPos;
+            _enabled = true;
+
+        }
+        public void Disable(Map map)
+        {
+            _lastPos = _pos;
+            _pos = map.FindEndingLine();
+            _enabled = false;
+        }
+        public void RunDeath(Map map)
+        {
+            _icon = "";
+            _oldpos.SetposX(map.FindEndingLine().GetPositionX());
+            _oldpos.SetposY(map.FindEndingLine().GetPositionY());
+            DenyMovement();
+        }
+
+        public bool AliveChecker()
+        {
+            return _health.AliveCheck();
+        }
+    }
+}
