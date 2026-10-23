@@ -76,8 +76,8 @@ namespace PlayableRPG_MasonSeale
             windowY = Console.WindowWidth;
             //shop = new Shop(player);
             quest1 = new Quests(1, "Defeat 3 enemies", false);
-            quest2 = new Quests(2, "Collect 5 coins", false);
-            quest3 = new Quests(3, "something", false);
+            quest2 = new Quests(2, "Collect 5 Gold bars", false);
+            quest3 = new Quests(3, "Collect All Gold bars", false);
 
             hud = new Hud();
             player = new Player(damage: 1, color: ConsoleColor.Blue, "0", 2, 4, 10);
@@ -141,13 +141,13 @@ namespace PlayableRPG_MasonSeale
             _questManager.Add(quest1);
             _questManager.Add(quest2);
             _questManager.Add(quest3);
-
             currentMap = new Map();
             referee = new MovementChecker();
             
             currentMap.SetBoundries();
             bomb = new bomb(currentMap);
             player.GetBomb(bomb);
+
         }
         public void Update()
         {
@@ -157,10 +157,20 @@ namespace PlayableRPG_MasonSeale
                 //update map
                 currentMap.Update();
                 hud.HudUpdate(player);
-                foreach (Quests quests in _questManager)
+
+                if (player.CheckGold() >= 5) quest2._isCompleted = true;
+                if (enemyCount >= 1) quest1._isCompleted = true;
+                if (player.CheckGold() >= 26) quest3._isCompleted = true;
+                for (int i = 0; i < _questManager.Count; i++)
                 {
-                    quests.DrawQuests();
+                    _questManager[i].DrawQuests();
+  
                 }
+                //foreach (Quests quests in _questManager)
+                //{
+                //    quests.DrawQuests();
+                    
+                //}
 
                 if (player.AliveChecker() == false)
                 {
@@ -184,16 +194,15 @@ namespace PlayableRPG_MasonSeale
 
                 foreach (Character enemy in _enemyManager)
                 {
-                    if (enemy.AliveChecker() == false)
-                    {
-                        enemyCount += 1;
-                    }
+
                     if (enemy.AliveChecker())
                     {
+
                         enemy.Update();
-                        
-                        
                     }
+
+
+                    
                 }
                 bomb.Update(player);
                 //player moves
@@ -221,7 +230,7 @@ namespace PlayableRPG_MasonSeale
                 referee.PlayerHealCheck(player, currentMap, hud);
                 referee.PlayerGoldCheck(player, currentMap, hud);
                 referee.LavaCheck(player, currentMap, hud);
-                if(enemyCount >= 1)
+                if (quest1._isCompleted == true && quest2._isCompleted == true && quest3._isCompleted == true)
                 {
                     Console.Beep(4000, 20);
                     Console.Beep(2000, 20);
@@ -244,6 +253,7 @@ namespace PlayableRPG_MasonSeale
                     if(enemy.AliveChecker() == false)
                     {
                         enemy.Disable(currentMap);
+                        enemyCount += 1;
                     }
                     referee.AttackDetection(enemy, player, hud);
                     referee.BoundCheck(enemy, currentMap);
